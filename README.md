@@ -1,6 +1,25 @@
+
+# AdRizer related
+##### We forked this repo to minimize the package size as we only use a few APIs
+### Development/deployment pipeline:
+```
+  Download => Generate => Compile =>  Publish
+```
+
 <img src="https://avatars0.githubusercontent.com/u/1342004?v=3&s=96" alt="Google Inc. logo" title="Google" align="right" height="96" width="96"/>
 
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
+
 # Google APIs Node.js Client
+
+
 
 [![npm version][npmimg]][npm]
 [![Code Coverage][codecovimg]][codecov]

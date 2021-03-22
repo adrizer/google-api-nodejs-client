@@ -122,9 +122,10 @@ export class Generator {
     const queue = new Q({concurrency: 50});
     console.log(`Generating ${apis.length} APIs...`);
     await queue.addAll(
-      apis.map(api => async () => {
+      apis.map((api, i) => async () => {
         // look at ignore.json to find a list of APIs to ignore
         if (ignore.includes(api.id)) {
+          apis.splice(i, 1)
           this.log(`Skipping API ${api.id}`);
           return;
         }

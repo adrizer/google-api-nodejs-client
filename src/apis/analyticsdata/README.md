@@ -2,7 +2,7 @@
 
 # analyticsdata
 
-> Accesses report data in Google Analytics.
+> 
 
 ## Support status
 **Note**: Google provides multiple libraries for this service. This library is in
