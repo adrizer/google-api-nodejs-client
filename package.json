@@ -1,6 +1,6 @@
 {
   "name": "googleapis",
-  "version": "68.0.0",
+  "version": "68.1.1",
   "repository": "googleapis/google-api-nodejs-client",
   "license": "Apache-2.0",
   "description": "Google APIs Client Library for Node.js",
@@ -32,8 +32,8 @@
     "clean": "gts clean",
     "fix": "gts fix",
     "pregenerate": "npm run build-tools",
-    "generate-all": "node build/src/generator/generator.js",
-    "generate": "mv ignore.json ignore.json.bak && node generateIgnore && node build/src/generator/generator.js",
+    "generate": "node build/src/generator/generator.js",
+    "generateIgnore": "mv ignore.json ignore.json.bak && node generateIgnore",
     "docs-test": "echo 🙈 this was taking too long and timing out CI",
     "presubmit-prs": "npm run compile",
     "submit-prs": "node --max-old-space-size=8192 build/src/generator/synth.js",
