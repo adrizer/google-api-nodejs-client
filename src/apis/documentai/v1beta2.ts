@@ -240,6 +240,15 @@ export namespace documentai_v1beta2 {
     evaluation?: string | null;
   }
   /**
+   * The long running operation metadata for SampleDataset.
+   */
+  export interface Schema$GoogleCloudDocumentaiUiv1beta3SampleDatasetMetadata {
+    /**
+     * The basic metadata of the long running operation.
+     */
+    commonMetadata?: Schema$GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata;
+  }
+  /**
    * The long running operation metadata for set default processor version method.
    */
   export interface Schema$GoogleCloudDocumentaiUiv1beta3SetDefaultProcessorVersionMetadata {
@@ -399,7 +408,7 @@ export namespace documentai_v1beta2 {
    */
   export interface Schema$GoogleCloudDocumentaiV1beta1Document {
     /**
-     * Inline document content, represented as a stream of bytes. Note: As with all `bytes` fields, protobuffers use a pure binary representation, whereas JSON representations use base64.
+     * Optional. Inline document content, represented as a stream of bytes. Note: As with all `bytes` fields, protobuffers use a pure binary representation, whereas JSON representations use base64.
      */
     content?: string | null;
     /**
@@ -431,7 +440,7 @@ export namespace documentai_v1beta2 {
      */
     shardInfo?: Schema$GoogleCloudDocumentaiV1beta1DocumentShardInfo;
     /**
-     * UTF-8 encoded text in reading order from the document.
+     * Optional. UTF-8 encoded text in reading order from the document.
      */
     text?: string | null;
     /**
@@ -443,11 +452,7 @@ export namespace documentai_v1beta2 {
      */
     textStyles?: Schema$GoogleCloudDocumentaiV1beta1DocumentStyle[];
     /**
-     * A list of translations on Document.text. For document shards, translations in this list may cross shard boundaries.
-     */
-    translations?: Schema$GoogleCloudDocumentaiV1beta1DocumentTranslation[];
-    /**
-     * Currently supports Google Cloud Storage URI of the form `gs://bucket_name/object_name`. Object versioning is not supported. See [Google Cloud Storage Request URIs](https://cloud.google.com/storage/docs/reference-uris) for more info.
+     * Optional. Currently supports Google Cloud Storage URI of the form `gs://bucket_name/object_name`. Object versioning is not supported. See [Google Cloud Storage Request URIs](https://cloud.google.com/storage/docs/reference-uris) for more info.
      */
     uri?: string | null;
   }
@@ -464,11 +469,11 @@ export namespace documentai_v1beta2 {
      */
     id?: string | null;
     /**
-     * Deprecated. Use `id` field instead.
+     * Optional. Deprecated. Use `id` field instead.
      */
     mentionId?: string | null;
     /**
-     * Text value in the document e.g. `1600 Amphitheatre Pkwy`.
+     * Optional. Text value in the document e.g. `1600 Amphitheatre Pkwy`.
      */
     mentionText?: string | null;
     /**
@@ -492,7 +497,7 @@ export namespace documentai_v1beta2 {
      */
     redacted?: boolean | null;
     /**
-     * Provenance of the entity. Text anchor indexing into the Document.text.
+     * Optional. Provenance of the entity. Text anchor indexing into the Document.text.
      */
     textAnchor?: Schema$GoogleCloudDocumentaiV1beta1DocumentTextAnchor;
     /**
@@ -1083,27 +1088,6 @@ export namespace documentai_v1beta2 {
     textAnchor?: Schema$GoogleCloudDocumentaiV1beta1DocumentTextAnchor;
   }
   /**
-   * A translation of the text segment.
-   */
-  export interface Schema$GoogleCloudDocumentaiV1beta1DocumentTranslation {
-    /**
-     * The BCP-47 language code, such as "en-US" or "sr-Latn". For more information, see http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
-     */
-    languageCode?: string | null;
-    /**
-     * The history of this annotation.
-     */
-    provenance?: Schema$GoogleCloudDocumentaiV1beta1DocumentProvenance[];
-    /**
-     * Provenance of the translation. Text anchor indexing into the Document.text. There can only be a single `TextAnchor.text_segments` element. If the start and end index of the text segment are the same, the text change is inserted before that index.
-     */
-    textAnchor?: Schema$GoogleCloudDocumentaiV1beta1DocumentTextAnchor;
-    /**
-     * Text translated into the target language.
-     */
-    translatedText?: string | null;
-  }
-  /**
    * The Google Cloud Storage location where the output file will be written to.
    */
   export interface Schema$GoogleCloudDocumentaiV1beta1GcsDestination {
@@ -1246,7 +1230,7 @@ export namespace documentai_v1beta2 {
    */
   export interface Schema$GoogleCloudDocumentaiV1beta2Document {
     /**
-     * Inline document content, represented as a stream of bytes. Note: As with all `bytes` fields, protobuffers use a pure binary representation, whereas JSON representations use base64.
+     * Optional. Inline document content, represented as a stream of bytes. Note: As with all `bytes` fields, protobuffers use a pure binary representation, whereas JSON representations use base64.
      */
     content?: string | null;
     /**
@@ -1282,7 +1266,7 @@ export namespace documentai_v1beta2 {
      */
     shardInfo?: Schema$GoogleCloudDocumentaiV1beta2DocumentShardInfo;
     /**
-     * UTF-8 encoded text in reading order from the document.
+     * Optional. UTF-8 encoded text in reading order from the document.
      */
     text?: string | null;
     /**
@@ -1294,11 +1278,7 @@ export namespace documentai_v1beta2 {
      */
     textStyles?: Schema$GoogleCloudDocumentaiV1beta2DocumentStyle[];
     /**
-     * A list of translations on Document.text. For document shards, translations in this list may cross shard boundaries.
-     */
-    translations?: Schema$GoogleCloudDocumentaiV1beta2DocumentTranslation[];
-    /**
-     * Currently supports Google Cloud Storage URI of the form `gs://bucket_name/object_name`. Object versioning is not supported. See [Google Cloud Storage Request URIs](https://cloud.google.com/storage/docs/reference-uris) for more info.
+     * Optional. Currently supports Google Cloud Storage URI of the form `gs://bucket_name/object_name`. Object versioning is not supported. See [Google Cloud Storage Request URIs](https://cloud.google.com/storage/docs/reference-uris) for more info.
      */
     uri?: string | null;
   }
@@ -1315,11 +1295,11 @@ export namespace documentai_v1beta2 {
      */
     id?: string | null;
     /**
-     * Deprecated. Use `id` field instead.
+     * Optional. Deprecated. Use `id` field instead.
      */
     mentionId?: string | null;
     /**
-     * Text value in the document e.g. `1600 Amphitheatre Pkwy`.
+     * Optional. Text value in the document e.g. `1600 Amphitheatre Pkwy`.
      */
     mentionText?: string | null;
     /**
@@ -1343,7 +1323,7 @@ export namespace documentai_v1beta2 {
      */
     redacted?: boolean | null;
     /**
-     * Provenance of the entity. Text anchor indexing into the Document.text.
+     * Optional. Provenance of the entity. Text anchor indexing into the Document.text.
      */
     textAnchor?: Schema$GoogleCloudDocumentaiV1beta2DocumentTextAnchor;
     /**
@@ -1949,27 +1929,6 @@ export namespace documentai_v1beta2 {
      * Provenance of the correction. Text anchor indexing into the Document.text. There can only be a single `TextAnchor.text_segments` element. If the start and end index of the text segment are the same, the text change is inserted before that index.
      */
     textAnchor?: Schema$GoogleCloudDocumentaiV1beta2DocumentTextAnchor;
-  }
-  /**
-   * A translation of the text segment.
-   */
-  export interface Schema$GoogleCloudDocumentaiV1beta2DocumentTranslation {
-    /**
-     * The BCP-47 language code, such as "en-US" or "sr-Latn". For more information, see http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
-     */
-    languageCode?: string | null;
-    /**
-     * The history of this annotation.
-     */
-    provenance?: Schema$GoogleCloudDocumentaiV1beta2DocumentProvenance[];
-    /**
-     * Provenance of the translation. Text anchor indexing into the Document.text. There can only be a single `TextAnchor.text_segments` element. If the start and end index of the text segment are the same, the text change is inserted before that index.
-     */
-    textAnchor?: Schema$GoogleCloudDocumentaiV1beta2DocumentTextAnchor;
-    /**
-     * Text translated into the target language.
-     */
-    translatedText?: string | null;
   }
   /**
    * Parameters to control entity extraction behavior.
@@ -2815,7 +2774,6 @@ export namespace documentai_v1beta2 {
      *   //   "text": "my_text",
      *   //   "textChanges": [],
      *   //   "textStyles": [],
-     *   //   "translations": [],
      *   //   "uri": "my_uri"
      *   // }
      * }
@@ -3174,7 +3132,6 @@ export namespace documentai_v1beta2 {
      *   //   "text": "my_text",
      *   //   "textChanges": [],
      *   //   "textStyles": [],
-     *   //   "translations": [],
      *   //   "uri": "my_uri"
      *   // }
      * }
