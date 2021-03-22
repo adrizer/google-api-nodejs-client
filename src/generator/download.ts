@@ -20,6 +20,8 @@ import {request, Headers} from 'gaxios';
 import * as gapi from 'googleapis-common';
 import * as mkdirp from 'mkdirp';
 
+const ignore = require('../../../ignore.json').ignore;
+
 export type Schema = {[index: string]: {}};
 export const DISCOVERY_URL = 'https://www.googleapis.com/discovery/v1/apis/';
 
@@ -63,7 +65,7 @@ export async function downloadDiscoveryDocs(
     : {'X-User-Ip': '0.0.0.0'};
   console.log(`sending request to ${options.discoveryUrl}`);
   const res = await request<gapi.Schemas>({url: options.discoveryUrl, headers});
-  const apis = res.data.items;
+  const apis = res.data.items.filter(item => ignore.indexOf(item.id) === -1);
   const indexPath = path.join(options.downloadPath, 'index.json');
   gfs.writeFile(indexPath, res.data);
   const queue = new Q({concurrency: 25});
