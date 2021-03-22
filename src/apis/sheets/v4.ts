@@ -681,7 +681,7 @@ export namespace sheets_v4 {
    */
   export interface Schema$BatchClearValuesRequest {
     /**
-     * The ranges to clear, in A1 notation.
+     * The ranges to clear, in A1 or R1C1 notation.
      */
     ranges?: string[] | null;
   }
@@ -1031,7 +1031,7 @@ export namespace sheets_v4 {
      */
     bubbleOpacity?: number | null;
     /**
-     * The data contianing the bubble sizes. Bubble sizes are used to draw the bubbles at different sizes relative to each other. If specified, group_ids must also be specified. This field is optional.
+     * The data containing the bubble sizes. Bubble sizes are used to draw the bubbles at different sizes relative to each other. If specified, group_ids must also be specified. This field is optional.
      */
     bubbleSizes?: Schema$ChartData;
     /**
@@ -1051,7 +1051,7 @@ export namespace sheets_v4 {
      */
     legendPosition?: string | null;
     /**
-     * The data contianing the bubble y-values. These values locate the bubbles in the chart vertically.
+     * The data containing the bubble y-values. These values locate the bubbles in the chart vertically.
      */
     series?: Schema$ChartData;
   }
@@ -3124,7 +3124,7 @@ export namespace sheets_v4 {
      */
     label?: string | null;
     /**
-     * True if the headings in this pivot group should be repeated. This is only valid for row groupings and is ignored by columns. By default, we minimize repitition of headings by not showing higher level headings where they are the same. For example, even though the third row below corresponds to "Q1 Mar", "Q1" is not shown because it is redundant with previous rows. Setting repeat_headings to true would cause "Q1" to be repeated for "Feb" and "Mar". +--------------+ | Q1 | Jan | | | Feb | | | Mar | +--------+-----+ | Q1 Total | +--------------+
+     * True if the headings in this pivot group should be repeated. This is only valid for row groupings and is ignored by columns. By default, we minimize repetition of headings by not showing higher level headings where they are the same. For example, even though the third row below corresponds to "Q1 Mar", "Q1" is not shown because it is redundant with previous rows. Setting repeat_headings to true would cause "Q1" to be repeated for "Feb" and "Mar". +--------------+ | Q1 | Jan | | | Feb | | | Mar | +--------+-----+ | Q1 Total | +--------------+
      */
     repeatHeadings?: boolean | null;
     /**
@@ -6572,7 +6572,7 @@ export namespace sheets_v4 {
      *     dateTimeRenderOption: 'placeholder-value',
      *     // The major dimension that results should use. For example, if the spreadsheet data is: `A1=1,B1=2,A2=3,B2=4`, then requesting `range=A1:B2,majorDimension=ROWS` returns `[[1,2],[3,4]]`, whereas requesting `range=A1:B2,majorDimension=COLUMNS` returns `[[1,3],[2,4]]`.
      *     majorDimension: 'placeholder-value',
-     *     // The A1 notation of the values to retrieve.
+     *     // The A1 notation or R1C1 notation of the range to retrieve values from.
      *     ranges: 'placeholder-value',
      *     // The ID of the spreadsheet to retrieve data from.
      *     spreadsheetId: 'placeholder-value',
@@ -7185,7 +7185,7 @@ export namespace sheets_v4 {
      *
      *   // Do the magic
      *   const res = await sheets.spreadsheets.values.clear({
-     *     // The A1 notation of the values to clear.
+     *     // The A1 notation or R1C1 notation of the values to clear.
      *     range: 'placeholder-value',
      *     // The ID of the spreadsheet to update.
      *     spreadsheetId: 'placeholder-value',
@@ -7335,7 +7335,7 @@ export namespace sheets_v4 {
      *     dateTimeRenderOption: 'placeholder-value',
      *     // The major dimension that results should use. For example, if the spreadsheet data is: `A1=1,B1=2,A2=3,B2=4`, then requesting `range=A1:B2,majorDimension=ROWS` returns `[[1,2],[3,4]]`, whereas requesting `range=A1:B2,majorDimension=COLUMNS` returns `[[1,3],[2,4]]`.
      *     majorDimension: 'placeholder-value',
-     *     // The A1 notation of the values to retrieve.
+     *     // The A1 notation or R1C1 notation of the range to retrieve values from.
      *     range: 'placeholder-value',
      *     // The ID of the spreadsheet to retrieve data from.
      *     spreadsheetId: 'placeholder-value',
@@ -7676,7 +7676,7 @@ export namespace sheets_v4 {
      */
     majorDimension?: string;
     /**
-     * The A1 notation of the values to retrieve.
+     * The A1 notation or R1C1 notation of the range to retrieve values from.
      */
     ranges?: string[];
     /**
@@ -7727,7 +7727,7 @@ export namespace sheets_v4 {
   export interface Params$Resource$Spreadsheets$Values$Clear
     extends StandardParameters {
     /**
-     * The A1 notation of the values to clear.
+     * The A1 notation or R1C1 notation of the values to clear.
      */
     range?: string;
     /**
@@ -7751,7 +7751,7 @@ export namespace sheets_v4 {
      */
     majorDimension?: string;
     /**
-     * The A1 notation of the values to retrieve.
+     * The A1 notation or R1C1 notation of the range to retrieve values from.
      */
     range?: string;
     /**
