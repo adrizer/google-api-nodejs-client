@@ -1543,6 +1543,10 @@ export namespace bigquery_v2 {
      */
     createDisposition?: string | null;
     /**
+     * If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode.
+     */
+    createSession?: boolean | null;
+    /**
      * [Optional] Specifies the default dataset to use for unqualified table names in the query. Note that this does not alter behavior of unqualified dataset names.
      */
     defaultDataset?: Schema$DatasetReference;
@@ -1748,6 +1752,10 @@ export namespace bigquery_v2 {
      * [Output-only] Statistics for a child job of a script.
      */
     scriptStatistics?: Schema$ScriptStatistics;
+    /**
+     * [Output-only] [Preview] Information of the session if this job is part of one.
+     */
+    sessionInfoTemplate?: Schema$SessionInfo;
     /**
      * [Output-only] Start time of this job, in milliseconds since the epoch. This field will be present when the job transitions from the PENDING state to either RUNNING or DONE.
      */
@@ -1984,6 +1992,10 @@ export namespace bigquery_v2 {
   }
   export interface Schema$Model {
     /**
+     * The best trial_id across all training runs.
+     */
+    bestTrialId?: string | null;
+    /**
      * Output only. The time when this model was created, in millisecs since the epoch.
      */
     creationTime?: string | null;
@@ -2219,6 +2231,10 @@ export namespace bigquery_v2 {
      */
     connectionProperties?: Schema$ConnectionProperty[];
     /**
+     * If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode.
+     */
+    createSession?: boolean | null;
+    /**
      * [Optional] Specifies the default datasetId and projectId to assume for any unqualified table names in the query. If not set, all table names in the query string must be qualified in the format 'datasetId.tableId'.
      */
     defaultDataset?: Schema$DatasetReference;
@@ -2316,6 +2332,10 @@ export namespace bigquery_v2 {
      * The schema of the results. Present only when the query completes successfully.
      */
     schema?: Schema$TableSchema;
+    /**
+     * [Output-only] [Preview] Information of the session if this job is part of one.
+     */
+    sessionInfoTemplate?: Schema$SessionInfo;
     /**
      * The total number of bytes processed for this query. If this query was a dry run, this is the number of bytes that would be processed if the query were run.
      */
@@ -2444,6 +2464,10 @@ export namespace bigquery_v2 {
      */
     lastModifiedTime?: string | null;
     /**
+     * Optional. Set only if Routine is a "TABLE_VALUED_FUNCTION". TODO(b/173344646) - Update return_type documentation to say it cannot be set for TABLE_VALUED_FUNCTION before preview launch.
+     */
+    returnTableType?: Schema$StandardSqlTableType;
+    /**
      * Optional if language = "SQL"; required otherwise. If absent, the return type is inferred from definition_body at query time in each query that references this routine. If present, then the evaluated result will be cast to the specified returned type at query time. For example, for the functions created with the following statements: * `CREATE FUNCTION Add(x FLOAT64, y FLOAT64) RETURNS FLOAT64 AS (x + y);` * `CREATE FUNCTION Increment(x FLOAT64) AS (Add(x, 1));` * `CREATE FUNCTION Decrement(x FLOAT64) RETURNS FLOAT64 AS (Add(x, -1));` The return_type is `{type_kind: "FLOAT64"\}` for `Add` and `Decrement`, and is absent for `Increment` (inferred as FLOAT64 at query time). Suppose the function `Add` is replaced by `CREATE OR REPLACE FUNCTION Add(x INT64, y INT64) AS (x + y);` Then the inferred return type of `Increment` is automatically changed to INT64 at query time, while the return type of `Decrement` remains FLOAT64.
      */
     returnType?: Schema$StandardSqlDataType;
@@ -2568,6 +2592,12 @@ export namespace bigquery_v2 {
      */
     stackFrames?: Schema$ScriptStackFrame[];
   }
+  export interface Schema$SessionInfo {
+    /**
+     * [Output-only] // [Preview] Id of the session.
+     */
+    sessionId?: string | null;
+  }
   /**
    * Request message for `SetIamPolicy` method.
    */
@@ -2623,6 +2653,15 @@ export namespace bigquery_v2 {
   }
   export interface Schema$StandardSqlStructType {
     fields?: Schema$StandardSqlField[];
+  }
+  /**
+   * A table type
+   */
+  export interface Schema$StandardSqlTableType {
+    /**
+     * The columns in this table type
+     */
+    columns?: Schema$StandardSqlField[];
   }
   export interface Schema$Streamingbuffer {
     /**
@@ -2827,6 +2866,10 @@ export namespace bigquery_v2 {
      */
     fields?: Schema$TableFieldSchema[];
     /**
+     * [Optional] Maximum length of values of this field for STRINGS or BYTES. If max_length is not specified, no maximum length constraint is imposed on this field. If type = "STRING", then max_length represents the maximum UTF-8 length of strings in this field. If type = "BYTES", then max_length represents the maximum number of bytes in this field. It is invalid to set this field if type ≠ "STRING" and ≠ "BYTES".
+     */
+    maxLength?: string | null;
+    /**
      * [Optional] The field mode. Possible values include NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE.
      */
     mode?: string | null;
@@ -2835,6 +2878,14 @@ export namespace bigquery_v2 {
      */
     name?: string | null;
     policyTags?: {names?: string[]} | null;
+    /**
+     * [Optional] Precision (maximum number of total digits in base 10) and scale (maximum number of digits in the fractional part in base 10) constraints for values of this field for NUMERIC or BIGNUMERIC. It is invalid to set precision or scale if type ≠ "NUMERIC" and ≠ "BIGNUMERIC". If precision and scale are not specified, no value range constraint is imposed on this field insofar as values are permitted by the type. Values of this NUMERIC or BIGNUMERIC field must be in this range when: - Precision (P) and scale (S) are specified: [-10P-S + 10-S, 10P-S - 10-S] - Precision (P) is specified but not scale (and thus scale is interpreted to be equal to zero): [-10P + 1, 10P - 1]. Acceptable values for precision and scale if both are specified: - If type = "NUMERIC": 1 ≤ precision - scale ≤ 29 and 0 ≤ scale ≤ 9. - If type = "BIGNUMERIC": 1 ≤ precision - scale ≤ 38 and 0 ≤ scale ≤ 38. Acceptable values for precision if only precision is specified but not scale (and thus scale is interpreted to be equal to zero): - If type = "NUMERIC": 1 ≤ precision ≤ 29. - If type = "BIGNUMERIC": 1 ≤ precision ≤ 38. If scale is specified but not precision, then it is invalid.
+     */
+    precision?: string | null;
+    /**
+     * [Optional] See documentation for precision.
+     */
+    scale?: string | null;
     /**
      * [Required] The field data type. Possible values include STRING, BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT), NUMERIC, BIGNUMERIC, BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE, TIME, DATETIME, RECORD (where RECORD indicates that the field contains a nested schema) or STRUCT (same as RECORD).
      */
@@ -5004,6 +5055,7 @@ export namespace bigquery_v2 {
      *       // request body parameters
      *       // {
      *       //   "connectionProperties": [],
+     *       //   "createSession": false,
      *       //   "defaultDataset": {},
      *       //   "dryRun": false,
      *       //   "kind": "my_kind",
@@ -5035,6 +5087,7 @@ export namespace bigquery_v2 {
      *   //   "pageToken": "my_pageToken",
      *   //   "rows": [],
      *   //   "schema": {},
+     *   //   "sessionInfoTemplate": {},
      *   //   "totalBytesProcessed": "my_totalBytesProcessed",
      *   //   "totalRows": "my_totalRows"
      *   // }
@@ -5442,6 +5495,7 @@ export namespace bigquery_v2 {
      *
      *   // Example response
      *   // {
+     *   //   "bestTrialId": "my_bestTrialId",
      *   //   "creationTime": "my_creationTime",
      *   //   "description": "my_description",
      *   //   "encryptionConfiguration": {},
@@ -5733,6 +5787,7 @@ export namespace bigquery_v2 {
      *     requestBody: {
      *       // request body parameters
      *       // {
+     *       //   "bestTrialId": "my_bestTrialId",
      *       //   "creationTime": "my_creationTime",
      *       //   "description": "my_description",
      *       //   "encryptionConfiguration": {},
@@ -5754,6 +5809,7 @@ export namespace bigquery_v2 {
      *
      *   // Example response
      *   // {
+     *   //   "bestTrialId": "my_bestTrialId",
      *   //   "creationTime": "my_creationTime",
      *   //   "description": "my_description",
      *   //   "encryptionConfiguration": {},
@@ -6421,6 +6477,7 @@ export namespace bigquery_v2 {
      *   //   "importedLibraries": [],
      *   //   "language": "my_language",
      *   //   "lastModifiedTime": "my_lastModifiedTime",
+     *   //   "returnTableType": {},
      *   //   "returnType": {},
      *   //   "routineReference": {},
      *   //   "routineType": "my_routineType"
@@ -6565,6 +6622,7 @@ export namespace bigquery_v2 {
      *       //   "importedLibraries": [],
      *       //   "language": "my_language",
      *       //   "lastModifiedTime": "my_lastModifiedTime",
+     *       //   "returnTableType": {},
      *       //   "returnType": {},
      *       //   "routineReference": {},
      *       //   "routineType": "my_routineType"
@@ -6584,6 +6642,7 @@ export namespace bigquery_v2 {
      *   //   "importedLibraries": [],
      *   //   "language": "my_language",
      *   //   "lastModifiedTime": "my_lastModifiedTime",
+     *   //   "returnTableType": {},
      *   //   "returnType": {},
      *   //   "routineReference": {},
      *   //   "routineType": "my_routineType"
@@ -6879,6 +6938,7 @@ export namespace bigquery_v2 {
      *       //   "importedLibraries": [],
      *       //   "language": "my_language",
      *       //   "lastModifiedTime": "my_lastModifiedTime",
+     *       //   "returnTableType": {},
      *       //   "returnType": {},
      *       //   "routineReference": {},
      *       //   "routineType": "my_routineType"
@@ -6898,6 +6958,7 @@ export namespace bigquery_v2 {
      *   //   "importedLibraries": [],
      *   //   "language": "my_language",
      *   //   "lastModifiedTime": "my_lastModifiedTime",
+     *   //   "returnTableType": {},
      *   //   "returnType": {},
      *   //   "routineReference": {},
      *   //   "routineType": "my_routineType"
