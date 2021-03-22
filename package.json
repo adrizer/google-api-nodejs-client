@@ -1,9 +1,9 @@
 {
-  "name": "googleapis",
+  "name": "adrizer-googleapis",
   "version": "68.1.1",
-  "repository": "googleapis/google-api-nodejs-client",
+  "repository": "adrizer/google-api-nodejs-client",
   "license": "Apache-2.0",
-  "description": "Google APIs Client Library for Node.js",
+  "description": "Fork of google/google-api-nodejs-client",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
   "engines": {
