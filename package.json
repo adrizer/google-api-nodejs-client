@@ -1,7 +1,7 @@
 {
   "name": "adrizer-googleapis",
   "version": "68.1.1",
-  "repository": "adrizer/google-api-nodejs-client",
+  "repository": "git://github.com/adrizer/google-api-nodejs-client.git",
   "license": "Apache-2.0",
   "description": "Fork of google/google-api-nodejs-client",
   "main": "./build/src/index.js",
