@@ -1,4 +1,6 @@
 {
   "src/apis/analytics": "0.1.0",
-  "src/apis/analyticsreporting": "0.1.0"
+  "src/apis/analyticshub": "0.1.0",
+  "src/apis/analyticsreporting": "0.1.0",
+  "src/apis/drive": "0.1.0"
 }

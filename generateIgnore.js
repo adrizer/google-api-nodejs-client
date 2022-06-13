@@ -1,14 +1,19 @@
 const path = require('path');
-const apiList = require(path.join(__dirname, 'discovery', 'index.json'));
 
-const whitelist = /^analytics.*/;
+let apiList;
+try {
+  apiList = require(path.join(__dirname, 'discovery', 'index.json'));
+} catch (e) { }
 
-let ignoreList = apiList.items.reduce((mem, item) => {
+const whitelist = /^analytics.*|drive:v3/;
+
+let ignoreList = apiList ? apiList.items.reduce((mem, item) => {
   if (!whitelist.test(item.id)) {
     mem.push(item.id);
   }
   return mem;
-}, []);
+}, []) : [];
+
 ignoreList = { ignore: ignoreList };
 
 require('fs').writeFileSync('ignore.json', JSON.stringify(ignoreList, null, 2));

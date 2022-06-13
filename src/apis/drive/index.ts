@@ -14,28 +14,24 @@
 /*! THIS FILE IS AUTO-GENERATED */
 
 import {AuthPlus, getAPI, GoogleConfigurable} from 'googleapis-common';
-import {analyticsdata_v1beta} from './v1beta';
+import {drive_v3} from './v3';
 
 export const VERSIONS = {
-  v1beta: analyticsdata_v1beta.Analyticsdata,
+  v3: drive_v3.Drive,
 };
 
-export function analyticsdata(
-  version: 'v1beta'
-): analyticsdata_v1beta.Analyticsdata;
-export function analyticsdata(
-  options: analyticsdata_v1beta.Options
-): analyticsdata_v1beta.Analyticsdata;
-export function analyticsdata<T = analyticsdata_v1beta.Analyticsdata>(
+export function drive(version: 'v3'): drive_v3.Drive;
+export function drive(options: drive_v3.Options): drive_v3.Drive;
+export function drive<T = drive_v3.Drive>(
   this: GoogleConfigurable,
-  versionOrOptions: 'v1beta' | analyticsdata_v1beta.Options
+  versionOrOptions: 'v3' | drive_v3.Options
 ) {
-  return getAPI<T>('analyticsdata', versionOrOptions, VERSIONS, this);
+  return getAPI<T>('drive', versionOrOptions, VERSIONS, this);
 }
 
 const auth = new AuthPlus();
 export {auth};
-export {analyticsdata_v1beta};
+export {drive_v3};
 export {
   AuthPlus,
   GlobalOptions,

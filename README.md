@@ -1,22 +1,35 @@
 
 # AdRizer related
 ##### We forked this repo to minimize the package size as we only use a few APIs
+
+<br/>
+
+## Adding new API's:
+  - Run `npm run generateIgnore`
+    - This will update the `discovery/index.json` list of current APIs
+  - Refer to `discovery/index.json` to identify the ID of the API(s) you want to whitelist
+  - Add a pattern to the regexp whitelist in `<root>/generateIgnore.js` that will match the new API(s)
+  - Run `npm run generateMin` to generate the new APIs (this will also upgrade existing ones)
+  - Ensure `src/index.ts` has the correct API exports
+  - Ensure the `src/apis/*` directories were updated correctly
+
+## Upgrading existing API's:
+  - Run `npm run generateMin` to re-generate whitelisted APIs using the current version
+
 ### Development/deployment pipeline:
 ```
   Download => Generate => Compile =>  Publish
 ```
+<hr/>
+<hr/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 <img src="https://avatars0.githubusercontent.com/u/1342004?v=3&s=96" alt="Google Inc. logo" title="Google" align="right" height="96" width="96"/>
-
-<hr>
-<hr>
-<hr>
-<hr>
-<hr>
-<hr>
-<hr>
-<hr>
-
 # Google APIs Node.js Client
 
 

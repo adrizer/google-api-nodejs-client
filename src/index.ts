@@ -20,5 +20,7 @@ export * as Auth from 'google-auth-library';
 
 export {analytics_v3} from './apis/analytics/v3';
 export {analyticsadmin_v1alpha} from './apis/analyticsadmin/v1alpha';
-export {analyticsdata_v1alpha} from './apis/analyticsdata/v1alpha';
+export {analyticsdata_v1beta} from './apis/analyticsdata/v1beta';
+export {analyticshub_v1beta1} from './apis/analyticshub/v1beta1';
 export {analyticsreporting_v4} from './apis/analyticsreporting/v4';
+export {drive_v3} from './apis/drive/v3';

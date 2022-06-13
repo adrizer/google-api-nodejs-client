@@ -21,10 +21,12 @@ import {
   VERSIONS as analyticsdataVersions,
   analyticsdata,
 } from './analyticsdata';
+import {VERSIONS as analyticshubVersions, analyticshub} from './analyticshub';
 import {
   VERSIONS as analyticsreportingVersions,
   analyticsreporting,
 } from './analyticsreporting';
+import {VERSIONS as driveVersions, drive} from './drive';
 
 export interface APIList {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,12 +37,16 @@ export const APIS: APIList = {
   analytics: analyticsVersions,
   analyticsadmin: analyticsadminVersions,
   analyticsdata: analyticsdataVersions,
+  analyticshub: analyticshubVersions,
   analyticsreporting: analyticsreportingVersions,
+  drive: driveVersions,
 };
 
 export class GeneratedAPIs {
   analytics = analytics;
   analyticsadmin = analyticsadmin;
   analyticsdata = analyticsdata;
+  analyticshub = analyticshub;
   analyticsreporting = analyticsreporting;
+  drive = drive;
 }

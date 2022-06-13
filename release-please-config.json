@@ -2,6 +2,8 @@
   "bootstrap-sha": "6e61af34c0bfdfc3d6f973bffcd6a7e2420590d2",
   "packages": {
     "src/apis/analytics": {},
-    "src/apis/analyticsreporting": {}
+    "src/apis/analyticshub": {},
+    "src/apis/analyticsreporting": {},
+    "src/apis/drive": {}
   }
 }

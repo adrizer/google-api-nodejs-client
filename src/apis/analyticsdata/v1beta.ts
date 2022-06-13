@@ -36,9 +36,9 @@ import {
 } from 'googleapis-common';
 import {Readable} from 'stream';
 
-export namespace analyticsdata_v1alpha {
+export namespace analyticsdata_v1beta {
   export interface Options extends GlobalOptions {
-    version: 'v1alpha';
+    version: 'v1beta';
   }
 
   interface StandardParameters {
@@ -108,13 +108,12 @@ export namespace analyticsdata_v1alpha {
    * @example
    * ```js
    * const {google} = require('googleapis');
-   * const analyticsdata = google.analyticsdata('v1alpha');
+   * const analyticsdata = google.analyticsdata('v1beta');
    * ```
    */
   export class Analyticsdata {
     context: APIRequestContext;
     properties: Resource$Properties;
-    v1alpha: Resource$V1alpha;
 
     constructor(options: GlobalOptions, google?: GoogleConfigurable) {
       this.context = {
@@ -123,18 +122,26 @@ export namespace analyticsdata_v1alpha {
       };
 
       this.properties = new Resource$Properties(this.context);
-      this.v1alpha = new Resource$V1alpha(this.context);
     }
   }
 
   /**
+   * A metric actively restricted in creating the report.
+   */
+  export interface Schema$ActiveMetricRestriction {
+    /**
+     * The name of the restricted metric.
+     */
+    metricName?: string | null;
+    /**
+     * The reason for this metric's restriction.
+     */
+    restrictedMetricTypes?: string[] | null;
+  }
+  /**
    * The batch request containing multiple pivot report requests.
    */
   export interface Schema$BatchRunPivotReportsRequest {
-    /**
-     * A property whose events are tracked. This entity must be specified for the batch. The entity within RunPivotReportRequest may either be unspecified or consistent with this entity.
-     */
-    entity?: Schema$Entity;
     /**
      * Individual requests. Each request has a separate pivot report response. Each batch request is allowed up to 5 requests.
      */
@@ -157,10 +164,6 @@ export namespace analyticsdata_v1alpha {
    * The batch request containing multiple report requests.
    */
   export interface Schema$BatchRunReportsRequest {
-    /**
-     * A property whose events are tracked. This entity must be specified for the batch. The entity within RunReportRequest may either be unspecified or consistent with this entity.
-     */
-    entity?: Schema$Entity;
     /**
      * Individual requests. Each request has a separate report response. Each batch request is allowed up to 5 requests.
      */
@@ -200,6 +203,44 @@ export namespace analyticsdata_v1alpha {
      * Name of a dimension. The name must refer back to a name in dimensions field of the request.
      */
     dimensionName?: string | null;
+  }
+  /**
+   * The request for compatibility information for a report's dimensions and metrics. Check compatibility provides a preview of the compatibility of a report; fields shared with the `runReport` request should be the same values as in your `runReport` request.
+   */
+  export interface Schema$CheckCompatibilityRequest {
+    /**
+     * Filters the dimensions and metrics in the response to just this compatibility. Commonly used as `”compatibilityFilter”: “COMPATIBLE”` to only return compatible dimensions & metrics.
+     */
+    compatibilityFilter?: string | null;
+    /**
+     * The filter clause of dimensions. `dimensionFilter` should be the same value as in your `runReport` request.
+     */
+    dimensionFilter?: Schema$FilterExpression;
+    /**
+     * The dimensions in this report. `dimensions` should be the same value as in your `runReport` request.
+     */
+    dimensions?: Schema$Dimension[];
+    /**
+     * The filter clause of metrics. `metricFilter` should be the same value as in your `runReport` request
+     */
+    metricFilter?: Schema$FilterExpression;
+    /**
+     * The metrics in this report. `metrics` should be the same value as in your `runReport` request.
+     */
+    metrics?: Schema$Metric[];
+  }
+  /**
+   * The compatibility response with the compatibility of each dimension & metric.
+   */
+  export interface Schema$CheckCompatibilityResponse {
+    /**
+     * The compatibility of each dimension.
+     */
+    dimensionCompatibilities?: Schema$DimensionCompatibility[];
+    /**
+     * The compatibility of each metric.
+     */
+    metricCompatibilities?: Schema$MetricCompatibility[];
   }
   /**
    * Defines a cohort selection criteria. A cohort is a group of users who share a common characteristic. For example, users with the same `firstSessionDate` belong to the same cohort.
@@ -292,7 +333,7 @@ export namespace analyticsdata_v1alpha {
     startDate?: string | null;
   }
   /**
-   * Dimensions are attributes of your data. For example, the dimension city indicates the city from which an event originates. Dimension values in report responses are strings; for example, city could be "Paris" or "New York". Requests are allowed up to 8 dimensions.
+   * Dimensions are attributes of your data. For example, the dimension city indicates the city from which an event originates. Dimension values in report responses are strings; for example, the city could be "Paris" or "New York". Requests are allowed up to 9 dimensions.
    */
   export interface Schema$Dimension {
     /**
@@ -300,9 +341,22 @@ export namespace analyticsdata_v1alpha {
      */
     dimensionExpression?: Schema$DimensionExpression;
     /**
-     * The name of the dimension. See the [API Dimensions](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#dimensions) for the list of dimension names. If `dimensionExpression` is specified, `name` can be any string that you would like. For example if a `dimensionExpression` concatenates `country` and `city`, you could call that dimension `countryAndCity`. Dimensions are referenced by `name` in `dimensionFilter`, `orderBys`, `dimensionExpression`, and `pivots`.
+     * The name of the dimension. See the [API Dimensions](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#dimensions) for the list of dimension names. If `dimensionExpression` is specified, `name` can be any string that you would like within the allowed character set. For example if a `dimensionExpression` concatenates `country` and `city`, you could call that dimension `countryAndCity`. Dimension names that you choose must match the regular expression `^[a-zA-Z0-9_]$`. Dimensions are referenced by `name` in `dimensionFilter`, `orderBys`, `dimensionExpression`, and `pivots`.
      */
     name?: string | null;
+  }
+  /**
+   * The compatibility for a single dimension.
+   */
+  export interface Schema$DimensionCompatibility {
+    /**
+     * The compatibility of this dimension. If the compatibility is COMPATIBLE, this dimension can be successfully added to the report.
+     */
+    compatibility?: string | null;
+    /**
+     * The dimension metadata contains the API name for this compatibility information. The dimension metadata also contains other helpful information like the UI name and description.
+     */
+    dimensionMetadata?: Schema$DimensionMetadata;
   }
   /**
    * Used to express a dimension which is the result of a formula of multiple dimensions. Example usages: 1) lower_case(dimension) 2) concatenate(dimension1, symbol, dimension2).
@@ -338,6 +392,10 @@ export namespace analyticsdata_v1alpha {
      * This dimension's name. Useable in [Dimension](#Dimension)'s `name`. For example, `eventName`.
      */
     apiName?: string | null;
+    /**
+     * The display name of the category that this dimension belongs to. Similar dimensions and metrics are categorized together.
+     */
+    category?: string | null;
     /**
      * True if the dimension is a custom dimension for this property.
      */
@@ -378,15 +436,6 @@ export namespace analyticsdata_v1alpha {
     value?: string | null;
   }
   /**
-   * The unique identifier of the property whose events are tracked.
-   */
-  export interface Schema$Entity {
-    /**
-     * A Google Analytics GA4 property id. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id).
-     */
-    propertyId?: string | null;
-  }
-  /**
    * An expression to filter dimension or metric values.
    */
   export interface Schema$Filter {
@@ -420,7 +469,7 @@ export namespace analyticsdata_v1alpha {
      */
     andGroup?: Schema$FilterExpressionList;
     /**
-     * A primitive filter. All fields in filter in same FilterExpression needs to be either all dimensions or metrics.
+     * A primitive filter. In the same FilterExpression, all of the filter's field names need to be either all dimensions or all metrics.
      */
     filter?: Schema$Filter;
     /**
@@ -484,9 +533,22 @@ export namespace analyticsdata_v1alpha {
      */
     invisible?: boolean | null;
     /**
-     * The name of the metric. See the [API Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics) for the list of metric names. If `expression` is specified, `name` can be any string that you would like. For example if `expression` is `screenPageViews/sessions`, you could call that metric's name = `viewsPerSession`. Metrics are referenced by `name` in `metricFilter`, `orderBys`, and metric `expression`.
+     * The name of the metric. See the [API Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics) for the list of metric names. If `expression` is specified, `name` can be any string that you would like within the allowed character set. For example if `expression` is `screenPageViews/sessions`, you could call that metric's name = `viewsPerSession`. Metric names that you choose must match the regular expression `^[a-zA-Z0-9_]$`. Metrics are referenced by `name` in `metricFilter`, `orderBys`, and metric `expression`.
      */
     name?: string | null;
+  }
+  /**
+   * The compatibility for a single metric.
+   */
+  export interface Schema$MetricCompatibility {
+    /**
+     * The compatibility of this metric. If the compatibility is COMPATIBLE, this metric can be successfully added to the report.
+     */
+    compatibility?: string | null;
+    /**
+     * The metric metadata contains the API name for this compatibility information. The metric metadata also contains other helpful information like the UI name and description.
+     */
+    metricMetadata?: Schema$MetricMetadata;
   }
   /**
    * Describes a metric column in the report. Visible metrics requested in a report produce column entries within rows and MetricHeaders. However, metrics used exclusively within filters or expressions do not produce columns in a report; correspondingly, those metrics do not produce headers.
@@ -509,6 +571,14 @@ export namespace analyticsdata_v1alpha {
      * A metric name. Useable in [Metric](#Metric)'s `name`. For example, `eventCount`.
      */
     apiName?: string | null;
+    /**
+     * If reasons are specified, your access is blocked to this metric for this property. API requests from you to this property for this metric will succeed; however, the report will contain only zeros for this metric. API requests with metric filters on blocked metrics will fail. If reasons are empty, you have access to this metric. To learn more, see [Access and data-restriction management](https://support.google.com/analytics/answer/10851388).
+     */
+    blockedReasons?: string[] | null;
+    /**
+     * The display name of the category that this metrics belongs to. Similar dimensions and metrics are categorized together.
+     */
+    category?: string | null;
     /**
      * True if the metric is a custom metric for this property.
      */
@@ -553,6 +623,23 @@ export namespace analyticsdata_v1alpha {
     value?: string | null;
   }
   /**
+   * A contiguous set of minutes: startMinutesAgo, startMinutesAgo + 1, ..., endMinutesAgo. Requests are allowed up to 2 minute ranges.
+   */
+  export interface Schema$MinuteRange {
+    /**
+     * The inclusive end minute for the query as a number of minutes before now. Cannot be before `startMinutesAgo`. For example, `"endMinutesAgo": 15` specifies the report should include event data from prior to 15 minutes ago. If unspecified, `endMinutesAgo` is defaulted to 0. Standard Analytics properties can request any minute in the last 30 minutes of event data (`endMinutesAgo <= 29`), and 360 Analytics properties can request any minute in the last 60 minutes of event data (`endMinutesAgo <= 59`).
+     */
+    endMinutesAgo?: number | null;
+    /**
+     * Assigns a name to this minute range. The dimension `dateRange` is valued to this name in a report response. If set, cannot begin with `date_range_` or `RESERVED_`. If not set, minute ranges are named by their zero based index in the request: `date_range_0`, `date_range_1`, etc.
+     */
+    name?: string | null;
+    /**
+     * The inclusive start minute for the query as a number of minutes before now. For example, `"startMinutesAgo": 29` specifies the report should include event data from 29 minutes ago and after. Cannot be after `endMinutesAgo`. If unspecified, `startMinutesAgo` is defaulted to 29. Standard Analytics properties can request up to the last 30 minutes of event data (`startMinutesAgo <= 29`), and 360 Analytics properties can request up to the last 60 minutes of event data (`startMinutesAgo <= 59`).
+     */
+    startMinutesAgo?: number | null;
+  }
+  /**
    * Filters for numeric or date values.
    */
   export interface Schema$NumericFilter {
@@ -579,7 +666,7 @@ export namespace analyticsdata_v1alpha {
     int64Value?: string | null;
   }
   /**
-   * The sort options.
+   * Order bys define how rows will be sorted in the response. For example, ordering rows by descending event count is one ordering, and ordering rows by the event name string is a different ordering.
    */
   export interface Schema$OrderBy {
     /**
@@ -608,7 +695,7 @@ export namespace analyticsdata_v1alpha {
      */
     fieldNames?: string[] | null;
     /**
-     * The number of rows to return in this pivot. The `limit` parameter is required. A `limit` of 10,000 is common for single pivot requests. The product of the `limit` for each `pivot` in a `RunPivotReportRequest` must not exceed 100,000. For example, a two pivot request with `limit: 1000` in each pivot will fail because the product is `1,000,000`.
+     * The number of unique combinations of dimension values to return in this pivot. The `limit` parameter is required. A `limit` of 10,000 is common for single pivot requests. The product of the `limit` for each `pivot` in a `RunPivotReportRequest` must not exceed 100,000. For example, a two pivot request with `limit: 1000` in each pivot will fail because the product is `1,000,000`.
      */
     limit?: string | null;
     /**
@@ -715,9 +802,29 @@ export namespace analyticsdata_v1alpha {
    */
   export interface Schema$ResponseMetaData {
     /**
+     * The currency code used in this report. Intended to be used in formatting currency metrics like `purchaseRevenue` for visualization. If currency_code was specified in the request, this response parameter will echo the request parameter; otherwise, this response parameter is the property's current currency_code. Currency codes are string encodings of currency types from the ISO 4217 standard (https://en.wikipedia.org/wiki/ISO_4217); for example "USD", "EUR", "JPY". To learn more, see https://support.google.com/analytics/answer/9796179.
+     */
+    currencyCode?: string | null;
+    /**
      * If true, indicates some buckets of dimension combinations are rolled into "(other)" row. This can happen for high cardinality reports.
      */
     dataLossFromOtherRow?: boolean | null;
+    /**
+     * If empty reason is specified, the report is empty for this reason.
+     */
+    emptyReason?: string | null;
+    /**
+     * Describes the schema restrictions actively enforced in creating this report. To learn more, see [Access and data-restriction management](https://support.google.com/analytics/answer/10851388).
+     */
+    schemaRestrictionResponse?: Schema$SchemaRestrictionResponse;
+    /**
+     * If `subjectToThresholding` is true, this report is subject to thresholding and only returns data that meets the minimum aggregation thresholds. It is possible for a request to be subject to thresholding thresholding and no data is absent from the report, and this happens when all data is above the thresholds. To learn more, see [Data thresholds](https://support.google.com/analytics/answer/9383630) and [About Demographics and Interests](https://support.google.com/analytics/answer/2799357).
+     */
+    subjectToThresholding?: boolean | null;
+    /**
+     * The property's current timezone. Intended to be used to interpret time-based dimensions like `hour` and `minute`. Formatted as strings from the IANA Time Zone database (https://www.iana.org/time-zones); for example "America/New_York" or "Asia/Tokyo".
+     */
+    timeZone?: string | null;
   }
   /**
    * Report data for each row. For example if RunReportRequest contains: ```none "dimensions": [ { "name": "eventName" \}, { "name": "countryId" \} ], "metrics": [ { "name": "eventCount" \} ] ``` One row with 'in_app_purchase' as the eventName, 'JP' as the countryId, and 15 as the eventCount, would be: ```none "dimensionValues": [ { "value": "in_app_purchase" \}, { "value": "JP" \} ], "metricValues": [ { "value": "15" \} ] ```
@@ -741,7 +848,7 @@ export namespace analyticsdata_v1alpha {
      */
     cohortSpec?: Schema$CohortSpec;
     /**
-     * A currency code in ISO4217 format, such as "AED", "USD", "JPY". If the field is empty, the report uses the entity's default currency.
+     * A currency code in ISO4217 format, such as "AED", "USD", "JPY". If the field is empty, the report uses the property's default currency.
      */
     currencyCode?: string | null;
     /**
@@ -756,10 +863,6 @@ export namespace analyticsdata_v1alpha {
      * The dimensions requested. All defined dimensions must be used by one of the following: dimension_expression, dimension_filter, pivots, order_bys.
      */
     dimensions?: Schema$Dimension[];
-    /**
-     * A property whose events are tracked. Within a batch request, this entity should either be unspecified or consistent with the batch-level entity.
-     */
-    entity?: Schema$Entity;
     /**
      * If false or unspecified, each row with all metrics equal to 0 will not be returned. If true, these rows will be returned if they are not separately removed by a filter.
      */
@@ -776,6 +879,10 @@ export namespace analyticsdata_v1alpha {
      * Describes the visual format of the report's dimensions in columns or rows. The union of the fieldNames (dimension names) in all pivots must be a subset of dimension names defined in Dimensions. No two pivots can share a dimension. A dimension is only visible if it appears in a pivot.
      */
     pivots?: Schema$Pivot[];
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Within a batch request, this property should either be unspecified or consistent with the batch-level property. Example: properties/1234
+     */
+    property?: string | null;
     /**
      * Toggles whether to return the current state of this Analytics Property's quota. Quota is returned in [PropertyQuota](#PropertyQuota).
      */
@@ -831,7 +938,7 @@ export namespace analyticsdata_v1alpha {
      */
     dimensions?: Schema$Dimension[];
     /**
-     * The number of rows to return. If the `limit` parameter is unspecified, 10,000 rows are returned. The API returns a maximum of 100,000 rows per request, no matter how many you ask for.
+     * The number of rows to return. If unspecified, 10,000 rows are returned. The API returns a maximum of 100,000 rows per request, no matter how many you ask for. `limit` must be positive. The API can also return fewer rows than the requested `limit`, if there aren't as many dimension values as the `limit`. For instance, there are fewer than 300 possible values for the dimension `country`, so when reporting on only `country`, you can't get more than 300 rows, even if you set `limit` to a higher value.
      */
     limit?: string | null;
     /**
@@ -846,6 +953,10 @@ export namespace analyticsdata_v1alpha {
      * The metrics requested and displayed.
      */
     metrics?: Schema$Metric[];
+    /**
+     * The minute ranges of event data to read. If unspecified, one minute range for the last 30 minutes will be used. If multiple minute ranges are requested, each response row will contain a zero based minute range index. If two minute ranges overlap, the event data for the overlapping minutes is included in the response rows for both minute ranges.
+     */
+    minuteRanges?: Schema$MinuteRange[];
     /**
      * Specifies how rows are ordered in the response.
      */
@@ -884,7 +995,7 @@ export namespace analyticsdata_v1alpha {
      */
     propertyQuota?: Schema$PropertyQuota;
     /**
-     * The total number of rows in the query result, regardless of the number of rows returned in the response. For example if a query returns 175 rows and includes limit = 50 in the API request, the response will contain row_count = 175 but only 50 rows.
+     * The total number of rows in the query result. `rowCount` is independent of the number of rows returned in the response and the `limit` request parameter. For example if a query returns 175 rows and includes `limit` of 50 in the API request, the response will contain `rowCount` of 175 but only 50 rows.
      */
     rowCount?: number | null;
     /**
@@ -905,7 +1016,7 @@ export namespace analyticsdata_v1alpha {
      */
     cohortSpec?: Schema$CohortSpec;
     /**
-     * A currency code in ISO4217 format, such as "AED", "USD", "JPY". If the field is empty, the report uses the entity's default currency.
+     * A currency code in ISO4217 format, such as "AED", "USD", "JPY". If the field is empty, the report uses the property's default currency.
      */
     currencyCode?: string | null;
     /**
@@ -913,7 +1024,7 @@ export namespace analyticsdata_v1alpha {
      */
     dateRanges?: Schema$DateRange[];
     /**
-     * The filter clause of dimensions. Dimensions must be requested to be used in this filter. Metrics cannot be used in this filter.
+     * Dimension filters allow you to ask for only specific dimension values in the report. To learn more, see [Fundamentals of Dimension Filters](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#dimension_filters) for examples. Metrics cannot be used in this filter.
      */
     dimensionFilter?: Schema$FilterExpression;
     /**
@@ -921,15 +1032,11 @@ export namespace analyticsdata_v1alpha {
      */
     dimensions?: Schema$Dimension[];
     /**
-     * A property whose events are tracked. Within a batch request, this entity should either be unspecified or consistent with the batch-level entity.
-     */
-    entity?: Schema$Entity;
-    /**
      * If false or unspecified, each row with all metrics equal to 0 will not be returned. If true, these rows will be returned if they are not separately removed by a filter.
      */
     keepEmptyRows?: boolean | null;
     /**
-     * The number of rows to return. If the `limit` parameter is unspecified, 10,000 rows are returned. The API returns a maximum of 100,000 rows per request, no matter how many you ask for. To learn more about this pagination parameter, see [Pagination](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
+     * The number of rows to return. If unspecified, 10,000 rows are returned. The API returns a maximum of 100,000 rows per request, no matter how many you ask for. `limit` must be positive. The API can also return fewer rows than the requested `limit`, if there aren't as many dimension values as the `limit`. For instance, there are fewer than 300 possible values for the dimension `country`, so when reporting on only `country`, you can't get more than 300 rows, even if you set `limit` to a higher value. To learn more about this pagination parameter, see [Pagination](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
      */
     limit?: string | null;
     /**
@@ -937,7 +1044,7 @@ export namespace analyticsdata_v1alpha {
      */
     metricAggregations?: string[] | null;
     /**
-     * The filter clause of metrics. Applied at post aggregation phase, similar to SQL having-clause. Metrics must be requested to be used in this filter. Dimensions cannot be used in this filter.
+     * The filter clause of metrics. Applied after aggregating the report's rows, similar to SQL having-clause. Dimensions cannot be used in this filter.
      */
     metricFilter?: Schema$FilterExpression;
     /**
@@ -945,13 +1052,17 @@ export namespace analyticsdata_v1alpha {
      */
     metrics?: Schema$Metric[];
     /**
-     * The row count of the start row. The first row is counted as row 0. To learn more about this pagination parameter, see [Pagination](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
+     * The row count of the start row. The first row is counted as row 0. When paging, the first request does not specify offset; or equivalently, sets offset to 0; the first request returns the first `limit` of rows. The second request sets offset to the `limit` of the first request; the second request returns the second `limit` of rows. To learn more about this pagination parameter, see [Pagination](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
      */
     offset?: string | null;
     /**
      * Specifies how rows are ordered in the response.
      */
     orderBys?: Schema$OrderBy[];
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Within a batch request, this property should either be unspecified or consistent with the batch-level property. Example: properties/1234
+     */
+    property?: string | null;
     /**
      * Toggles whether to return the current state of this Analytics Property's quota. Quota is returned in [PropertyQuota](#PropertyQuota).
      */
@@ -990,7 +1101,7 @@ export namespace analyticsdata_v1alpha {
      */
     propertyQuota?: Schema$PropertyQuota;
     /**
-     * The total number of rows in the query result, regardless of the number of rows returned in the response. For example if a query returns 175 rows and includes limit = 50 in the API request, the response will contain row_count = 175 but only 50 rows. To learn more about this pagination parameter, see [Pagination](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
+     * The total number of rows in the query result. `rowCount` is independent of the number of rows returned in the response, the `limit` request parameter, and the `offset` request parameter. For example if a query returns 175 rows and includes `limit` of 50 in the API request, the response will contain `rowCount` of 175 but only 50 rows. To learn more about this pagination parameter, see [Pagination](https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
      */
     rowCount?: number | null;
     /**
@@ -1001,6 +1112,15 @@ export namespace analyticsdata_v1alpha {
      * If requested, the totaled values of metrics.
      */
     totals?: Schema$Row[];
+  }
+  /**
+   * The schema restrictions actively enforced in creating this report. To learn more, see [Access and data-restriction management](https://support.google.com/analytics/answer/10851388).
+   */
+  export interface Schema$SchemaRestrictionResponse {
+    /**
+     * All restrictions actively enforced in creating the report. For example, `purchaseRevenue` always has the restriction type `REVENUE_DATA`. However, this active response restriction is only populated if the user's custom role disallows access to `REVENUE_DATA`.
+     */
+    activeMetricRestrictions?: Schema$ActiveMetricRestriction[];
   }
   /**
    * The filter for string
@@ -1027,6 +1147,459 @@ export namespace analyticsdata_v1alpha {
     }
 
     /**
+     * Returns multiple pivot reports in a batch. All reports must be for the same GA4 Property.
+     * @example
+     * ```js
+     * // Before running the sample:
+     * // - Enable the API at:
+     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
+     * // - Login into gcloud by running:
+     * //   `$ gcloud auth application-default login`
+     * // - Install the npm module by running:
+     * //   `$ npm install googleapis`
+     *
+     * const {google} = require('googleapis');
+     * const analyticsdata = google.analyticsdata('v1beta');
+     *
+     * async function main() {
+     *   const auth = new google.auth.GoogleAuth({
+     *     // Scopes can be specified either as an array or as a single, space-delimited string.
+     *     scopes: [
+     *       'https://www.googleapis.com/auth/analytics',
+     *       'https://www.googleapis.com/auth/analytics.readonly',
+     *     ],
+     *   });
+     *
+     *   // Acquire an auth client, and bind it to all future calls
+     *   const authClient = await auth.getClient();
+     *   google.options({auth: authClient});
+     *
+     *   // Do the magic
+     *   const res = await analyticsdata.properties.batchRunPivotReports({
+     *     // A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). This property must be specified for the batch. The property within RunPivotReportRequest may either be unspecified or consistent with this property. Example: properties/1234
+     *     property: 'properties/my-propertie',
+     *
+     *     // Request body metadata
+     *     requestBody: {
+     *       // request body parameters
+     *       // {
+     *       //   "requests": []
+     *       // }
+     *     },
+     *   });
+     *   console.log(res.data);
+     *
+     *   // Example response
+     *   // {
+     *   //   "kind": "my_kind",
+     *   //   "pivotReports": []
+     *   // }
+     * }
+     *
+     * main().catch(e => {
+     *   console.error(e);
+     *   throw e;
+     * });
+     *
+     * ```
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    batchRunPivotReports(
+      params: Params$Resource$Properties$Batchrunpivotreports,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    batchRunPivotReports(
+      params?: Params$Resource$Properties$Batchrunpivotreports,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$BatchRunPivotReportsResponse>;
+    batchRunPivotReports(
+      params: Params$Resource$Properties$Batchrunpivotreports,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    batchRunPivotReports(
+      params: Params$Resource$Properties$Batchrunpivotreports,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>,
+      callback: BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
+    ): void;
+    batchRunPivotReports(
+      params: Params$Resource$Properties$Batchrunpivotreports,
+      callback: BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
+    ): void;
+    batchRunPivotReports(
+      callback: BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
+    ): void;
+    batchRunPivotReports(
+      paramsOrCallback?:
+        | Params$Resource$Properties$Batchrunpivotreports
+        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$BatchRunPivotReportsResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Properties$Batchrunpivotreports;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params = {} as Params$Resource$Properties$Batchrunpivotreports;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl =
+        options.rootUrl || 'https://analyticsdata.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1beta/{+property}:batchRunPivotReports').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['property'],
+        pathParams: ['property'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$BatchRunPivotReportsResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$BatchRunPivotReportsResponse>(
+          parameters
+        );
+      }
+    }
+
+    /**
+     * Returns multiple reports in a batch. All reports must be for the same GA4 Property.
+     * @example
+     * ```js
+     * // Before running the sample:
+     * // - Enable the API at:
+     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
+     * // - Login into gcloud by running:
+     * //   `$ gcloud auth application-default login`
+     * // - Install the npm module by running:
+     * //   `$ npm install googleapis`
+     *
+     * const {google} = require('googleapis');
+     * const analyticsdata = google.analyticsdata('v1beta');
+     *
+     * async function main() {
+     *   const auth = new google.auth.GoogleAuth({
+     *     // Scopes can be specified either as an array or as a single, space-delimited string.
+     *     scopes: [
+     *       'https://www.googleapis.com/auth/analytics',
+     *       'https://www.googleapis.com/auth/analytics.readonly',
+     *     ],
+     *   });
+     *
+     *   // Acquire an auth client, and bind it to all future calls
+     *   const authClient = await auth.getClient();
+     *   google.options({auth: authClient});
+     *
+     *   // Do the magic
+     *   const res = await analyticsdata.properties.batchRunReports({
+     *     // A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). This property must be specified for the batch. The property within RunReportRequest may either be unspecified or consistent with this property. Example: properties/1234
+     *     property: 'properties/my-propertie',
+     *
+     *     // Request body metadata
+     *     requestBody: {
+     *       // request body parameters
+     *       // {
+     *       //   "requests": []
+     *       // }
+     *     },
+     *   });
+     *   console.log(res.data);
+     *
+     *   // Example response
+     *   // {
+     *   //   "kind": "my_kind",
+     *   //   "reports": []
+     *   // }
+     * }
+     *
+     * main().catch(e => {
+     *   console.error(e);
+     *   throw e;
+     * });
+     *
+     * ```
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    batchRunReports(
+      params: Params$Resource$Properties$Batchrunreports,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    batchRunReports(
+      params?: Params$Resource$Properties$Batchrunreports,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$BatchRunReportsResponse>;
+    batchRunReports(
+      params: Params$Resource$Properties$Batchrunreports,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    batchRunReports(
+      params: Params$Resource$Properties$Batchrunreports,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$BatchRunReportsResponse>,
+      callback: BodyResponseCallback<Schema$BatchRunReportsResponse>
+    ): void;
+    batchRunReports(
+      params: Params$Resource$Properties$Batchrunreports,
+      callback: BodyResponseCallback<Schema$BatchRunReportsResponse>
+    ): void;
+    batchRunReports(
+      callback: BodyResponseCallback<Schema$BatchRunReportsResponse>
+    ): void;
+    batchRunReports(
+      paramsOrCallback?:
+        | Params$Resource$Properties$Batchrunreports
+        | BodyResponseCallback<Schema$BatchRunReportsResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$BatchRunReportsResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$BatchRunReportsResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$BatchRunReportsResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Properties$Batchrunreports;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params = {} as Params$Resource$Properties$Batchrunreports;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl =
+        options.rootUrl || 'https://analyticsdata.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1beta/{+property}:batchRunReports').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['property'],
+        pathParams: ['property'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$BatchRunReportsResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$BatchRunReportsResponse>(parameters);
+      }
+    }
+
+    /**
+     * This compatibility method lists dimensions and metrics that can be added to a report request and maintain compatibility. This method fails if the request's dimensions and metrics are incompatible. In Google Analytics, reports fail if they request incompatible dimensions and/or metrics; in that case, you will need to remove dimensions and/or metrics from the incompatible report until the report is compatible. The Realtime and Core reports have different compatibility rules. This method checks compatibility for Core reports.
+     * @example
+     * ```js
+     * // Before running the sample:
+     * // - Enable the API at:
+     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
+     * // - Login into gcloud by running:
+     * //   `$ gcloud auth application-default login`
+     * // - Install the npm module by running:
+     * //   `$ npm install googleapis`
+     *
+     * const {google} = require('googleapis');
+     * const analyticsdata = google.analyticsdata('v1beta');
+     *
+     * async function main() {
+     *   const auth = new google.auth.GoogleAuth({
+     *     // Scopes can be specified either as an array or as a single, space-delimited string.
+     *     scopes: [
+     *       'https://www.googleapis.com/auth/analytics',
+     *       'https://www.googleapis.com/auth/analytics.readonly',
+     *     ],
+     *   });
+     *
+     *   // Acquire an auth client, and bind it to all future calls
+     *   const authClient = await auth.getClient();
+     *   google.options({auth: authClient});
+     *
+     *   // Do the magic
+     *   const res = await analyticsdata.properties.checkCompatibility({
+     *     // A Google Analytics GA4 property identifier whose events are tracked. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). `property` should be the same value as in your `runReport` request. Example: properties/1234 Set the Property ID to 0 for compatibility checking on dimensions and metrics common to all properties. In this special mode, this method will not return custom dimensions and metrics.
+     *     property: 'properties/my-propertie',
+     *
+     *     // Request body metadata
+     *     requestBody: {
+     *       // request body parameters
+     *       // {
+     *       //   "compatibilityFilter": "my_compatibilityFilter",
+     *       //   "dimensionFilter": {},
+     *       //   "dimensions": [],
+     *       //   "metricFilter": {},
+     *       //   "metrics": []
+     *       // }
+     *     },
+     *   });
+     *   console.log(res.data);
+     *
+     *   // Example response
+     *   // {
+     *   //   "dimensionCompatibilities": [],
+     *   //   "metricCompatibilities": []
+     *   // }
+     * }
+     *
+     * main().catch(e => {
+     *   console.error(e);
+     *   throw e;
+     * });
+     *
+     * ```
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    checkCompatibility(
+      params: Params$Resource$Properties$Checkcompatibility,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    checkCompatibility(
+      params?: Params$Resource$Properties$Checkcompatibility,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$CheckCompatibilityResponse>;
+    checkCompatibility(
+      params: Params$Resource$Properties$Checkcompatibility,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    checkCompatibility(
+      params: Params$Resource$Properties$Checkcompatibility,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$CheckCompatibilityResponse>,
+      callback: BodyResponseCallback<Schema$CheckCompatibilityResponse>
+    ): void;
+    checkCompatibility(
+      params: Params$Resource$Properties$Checkcompatibility,
+      callback: BodyResponseCallback<Schema$CheckCompatibilityResponse>
+    ): void;
+    checkCompatibility(
+      callback: BodyResponseCallback<Schema$CheckCompatibilityResponse>
+    ): void;
+    checkCompatibility(
+      paramsOrCallback?:
+        | Params$Resource$Properties$Checkcompatibility
+        | BodyResponseCallback<Schema$CheckCompatibilityResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$CheckCompatibilityResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$CheckCompatibilityResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$CheckCompatibilityResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Properties$Checkcompatibility;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params = {} as Params$Resource$Properties$Checkcompatibility;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl =
+        options.rootUrl || 'https://analyticsdata.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1beta/{+property}:checkCompatibility').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['property'],
+        pathParams: ['property'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$CheckCompatibilityResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$CheckCompatibilityResponse>(parameters);
+      }
+    }
+
+    /**
      * Returns metadata for dimensions and metrics available in reporting methods. Used to explore the dimensions and metrics. In this method, a Google Analytics GA4 Property Identifier is specified in the request, and the metadata response includes Custom dimensions and metrics as well as Universal metadata. For example if a custom metric with parameter name `levels_unlocked` is registered to a property, the Metadata response will contain `customEvent:levels_unlocked`. Universal metadata are dimensions and metrics applicable to any property such as `country` and `totalUsers`.
      * @example
      * ```js
@@ -1039,7 +1612,7 @@ export namespace analyticsdata_v1alpha {
      * //   `$ npm install googleapis`
      *
      * const {google} = require('googleapis');
-     * const analyticsdata = google.analyticsdata('v1alpha');
+     * const analyticsdata = google.analyticsdata('v1beta');
      *
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
@@ -1138,7 +1711,7 @@ export namespace analyticsdata_v1alpha {
       const parameters = {
         options: Object.assign(
           {
-            url: (rootUrl + '/v1alpha/{+name}').replace(/([^:]\/)\/+/g, '$1'),
+            url: (rootUrl + '/v1beta/{+name}').replace(/([^:]\/)\/+/g, '$1'),
             method: 'GET',
           },
           options
@@ -1159,7 +1732,7 @@ export namespace analyticsdata_v1alpha {
     }
 
     /**
-     * The Google Analytics Realtime API returns a customized report of realtime event data for your property. These reports show events and usage from the last 30 minutes.
+     * Returns a customized pivot report of your Google Analytics event data. Pivot reports are more advanced and expressive formats than regular reports. In a pivot report, dimensions are only visible if they are included in a pivot. Multiple pivots can be specified to further dissect your data.
      * @example
      * ```js
      * // Before running the sample:
@@ -1171,7 +1744,172 @@ export namespace analyticsdata_v1alpha {
      * //   `$ npm install googleapis`
      *
      * const {google} = require('googleapis');
-     * const analyticsdata = google.analyticsdata('v1alpha');
+     * const analyticsdata = google.analyticsdata('v1beta');
+     *
+     * async function main() {
+     *   const auth = new google.auth.GoogleAuth({
+     *     // Scopes can be specified either as an array or as a single, space-delimited string.
+     *     scopes: [
+     *       'https://www.googleapis.com/auth/analytics',
+     *       'https://www.googleapis.com/auth/analytics.readonly',
+     *     ],
+     *   });
+     *
+     *   // Acquire an auth client, and bind it to all future calls
+     *   const authClient = await auth.getClient();
+     *   google.options({auth: authClient});
+     *
+     *   // Do the magic
+     *   const res = await analyticsdata.properties.runPivotReport({
+     *     // A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Within a batch request, this property should either be unspecified or consistent with the batch-level property. Example: properties/1234
+     *     property: 'properties/my-propertie',
+     *
+     *     // Request body metadata
+     *     requestBody: {
+     *       // request body parameters
+     *       // {
+     *       //   "cohortSpec": {},
+     *       //   "currencyCode": "my_currencyCode",
+     *       //   "dateRanges": [],
+     *       //   "dimensionFilter": {},
+     *       //   "dimensions": [],
+     *       //   "keepEmptyRows": false,
+     *       //   "metricFilter": {},
+     *       //   "metrics": [],
+     *       //   "pivots": [],
+     *       //   "property": "my_property",
+     *       //   "returnPropertyQuota": false
+     *       // }
+     *     },
+     *   });
+     *   console.log(res.data);
+     *
+     *   // Example response
+     *   // {
+     *   //   "aggregates": [],
+     *   //   "dimensionHeaders": [],
+     *   //   "kind": "my_kind",
+     *   //   "metadata": {},
+     *   //   "metricHeaders": [],
+     *   //   "pivotHeaders": [],
+     *   //   "propertyQuota": {},
+     *   //   "rows": []
+     *   // }
+     * }
+     *
+     * main().catch(e => {
+     *   console.error(e);
+     *   throw e;
+     * });
+     *
+     * ```
+     *
+     * @param params - Parameters for request
+     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
+     * @param callback - Optional callback that handles the response.
+     * @returns A promise if used with async/await, or void if used with a callback.
+     */
+    runPivotReport(
+      params: Params$Resource$Properties$Runpivotreport,
+      options: StreamMethodOptions
+    ): GaxiosPromise<Readable>;
+    runPivotReport(
+      params?: Params$Resource$Properties$Runpivotreport,
+      options?: MethodOptions
+    ): GaxiosPromise<Schema$RunPivotReportResponse>;
+    runPivotReport(
+      params: Params$Resource$Properties$Runpivotreport,
+      options: StreamMethodOptions | BodyResponseCallback<Readable>,
+      callback: BodyResponseCallback<Readable>
+    ): void;
+    runPivotReport(
+      params: Params$Resource$Properties$Runpivotreport,
+      options:
+        | MethodOptions
+        | BodyResponseCallback<Schema$RunPivotReportResponse>,
+      callback: BodyResponseCallback<Schema$RunPivotReportResponse>
+    ): void;
+    runPivotReport(
+      params: Params$Resource$Properties$Runpivotreport,
+      callback: BodyResponseCallback<Schema$RunPivotReportResponse>
+    ): void;
+    runPivotReport(
+      callback: BodyResponseCallback<Schema$RunPivotReportResponse>
+    ): void;
+    runPivotReport(
+      paramsOrCallback?:
+        | Params$Resource$Properties$Runpivotreport
+        | BodyResponseCallback<Schema$RunPivotReportResponse>
+        | BodyResponseCallback<Readable>,
+      optionsOrCallback?:
+        | MethodOptions
+        | StreamMethodOptions
+        | BodyResponseCallback<Schema$RunPivotReportResponse>
+        | BodyResponseCallback<Readable>,
+      callback?:
+        | BodyResponseCallback<Schema$RunPivotReportResponse>
+        | BodyResponseCallback<Readable>
+    ):
+      | void
+      | GaxiosPromise<Schema$RunPivotReportResponse>
+      | GaxiosPromise<Readable> {
+      let params = (paramsOrCallback ||
+        {}) as Params$Resource$Properties$Runpivotreport;
+      let options = (optionsOrCallback || {}) as MethodOptions;
+
+      if (typeof paramsOrCallback === 'function') {
+        callback = paramsOrCallback;
+        params = {} as Params$Resource$Properties$Runpivotreport;
+        options = {};
+      }
+
+      if (typeof optionsOrCallback === 'function') {
+        callback = optionsOrCallback;
+        options = {};
+      }
+
+      const rootUrl =
+        options.rootUrl || 'https://analyticsdata.googleapis.com/';
+      const parameters = {
+        options: Object.assign(
+          {
+            url: (rootUrl + '/v1beta/{+property}:runPivotReport').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
+            method: 'POST',
+          },
+          options
+        ),
+        params,
+        requiredParams: ['property'],
+        pathParams: ['property'],
+        context: this.context,
+      };
+      if (callback) {
+        createAPIRequest<Schema$RunPivotReportResponse>(
+          parameters,
+          callback as BodyResponseCallback<unknown>
+        );
+      } else {
+        return createAPIRequest<Schema$RunPivotReportResponse>(parameters);
+      }
+    }
+
+    /**
+     * Returns a customized report of realtime event data for your property. Events appear in realtime reports seconds after they have been sent to the Google Analytics. Realtime reports show events and usage data for the periods of time ranging from the present moment to 30 minutes ago (up to 60 minutes for Google Analytics 360 properties). For a guide to constructing realtime requests & understanding responses, see [Creating a Realtime Report](https://developers.google.com/analytics/devguides/reporting/data/v1/realtime-basics).
+     * @example
+     * ```js
+     * // Before running the sample:
+     * // - Enable the API at:
+     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
+     * // - Login into gcloud by running:
+     * //   `$ gcloud auth application-default login`
+     * // - Install the npm module by running:
+     * //   `$ npm install googleapis`
+     *
+     * const {google} = require('googleapis');
+     * const analyticsdata = google.analyticsdata('v1beta');
      *
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
@@ -1201,6 +1939,7 @@ export namespace analyticsdata_v1alpha {
      *       //   "metricAggregations": [],
      *       //   "metricFilter": {},
      *       //   "metrics": [],
+     *       //   "minuteRanges": [],
      *       //   "orderBys": [],
      *       //   "returnPropertyQuota": false
      *       // }
@@ -1298,7 +2037,7 @@ export namespace analyticsdata_v1alpha {
       const parameters = {
         options: Object.assign(
           {
-            url: (rootUrl + '/v1alpha/{+property}:runRealtimeReport').replace(
+            url: (rootUrl + '/v1beta/{+property}:runRealtimeReport').replace(
               /([^:]\/)\/+/g,
               '$1'
             ),
@@ -1320,36 +2059,9 @@ export namespace analyticsdata_v1alpha {
         return createAPIRequest<Schema$RunRealtimeReportResponse>(parameters);
       }
     }
-  }
-
-  export interface Params$Resource$Properties$Getmetadata
-    extends StandardParameters {
-    /**
-     * Required. The resource name of the metadata to retrieve. This name field is specified in the URL path and not URL parameters. Property is a numeric Google Analytics GA4 Property identifier. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Example: properties/1234/metadata Set the Property ID to 0 for dimensions and metrics common to all properties. In this special mode, this method will not return custom dimensions and metrics.
-     */
-    name?: string;
-  }
-  export interface Params$Resource$Properties$Runrealtimereport
-    extends StandardParameters {
-    /**
-     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Example: properties/1234
-     */
-    property?: string;
 
     /**
-     * Request body metadata
-     */
-    requestBody?: Schema$RunRealtimeReportRequest;
-  }
-
-  export class Resource$V1alpha {
-    context: APIRequestContext;
-    constructor(context: APIRequestContext) {
-      this.context = context;
-    }
-
-    /**
-     * Returns multiple pivot reports in a batch. All reports must be for the same Entity.
+     * Returns a customized report of your Google Analytics event data. Reports contain statistics derived from data collected by the Google Analytics tracking code. The data returned from the API is as a table with columns for the requested dimensions and metrics. Metrics are individual measurements of user activity on your property, such as active users or event count. Dimensions break down metrics across some common criteria, such as country or event name. For a guide to constructing requests & understanding responses, see [Creating a Report](https://developers.google.com/analytics/devguides/reporting/data/v1/basics).
      * @example
      * ```js
      * // Before running the sample:
@@ -1361,7 +2073,7 @@ export namespace analyticsdata_v1alpha {
      * //   `$ npm install googleapis`
      *
      * const {google} = require('googleapis');
-     * const analyticsdata = google.analyticsdata('v1alpha');
+     * const analyticsdata = google.analyticsdata('v1beta');
      *
      * async function main() {
      *   const auth = new google.auth.GoogleAuth({
@@ -1377,303 +2089,10 @@ export namespace analyticsdata_v1alpha {
      *   google.options({auth: authClient});
      *
      *   // Do the magic
-     *   const res = await analyticsdata.batchRunPivotReports({
-     *     // Request body metadata
-     *     requestBody: {
-     *       // request body parameters
-     *       // {
-     *       //   "entity": {},
-     *       //   "requests": []
-     *       // }
-     *     },
-     *   });
-     *   console.log(res.data);
+     *   const res = await analyticsdata.properties.runReport({
+     *     // A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Within a batch request, this property should either be unspecified or consistent with the batch-level property. Example: properties/1234
+     *     property: 'properties/my-propertie',
      *
-     *   // Example response
-     *   // {
-     *   //   "kind": "my_kind",
-     *   //   "pivotReports": []
-     *   // }
-     * }
-     *
-     * main().catch(e => {
-     *   console.error(e);
-     *   throw e;
-     * });
-     *
-     * ```
-     *
-     * @param params - Parameters for request
-     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
-     * @param callback - Optional callback that handles the response.
-     * @returns A promise if used with async/await, or void if used with a callback.
-     */
-    batchRunPivotReports(
-      params: Params$Resource$V1alpha$Batchrunpivotreports,
-      options: StreamMethodOptions
-    ): GaxiosPromise<Readable>;
-    batchRunPivotReports(
-      params?: Params$Resource$V1alpha$Batchrunpivotreports,
-      options?: MethodOptions
-    ): GaxiosPromise<Schema$BatchRunPivotReportsResponse>;
-    batchRunPivotReports(
-      params: Params$Resource$V1alpha$Batchrunpivotreports,
-      options: StreamMethodOptions | BodyResponseCallback<Readable>,
-      callback: BodyResponseCallback<Readable>
-    ): void;
-    batchRunPivotReports(
-      params: Params$Resource$V1alpha$Batchrunpivotreports,
-      options:
-        | MethodOptions
-        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>,
-      callback: BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
-    ): void;
-    batchRunPivotReports(
-      params: Params$Resource$V1alpha$Batchrunpivotreports,
-      callback: BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
-    ): void;
-    batchRunPivotReports(
-      callback: BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
-    ): void;
-    batchRunPivotReports(
-      paramsOrCallback?:
-        | Params$Resource$V1alpha$Batchrunpivotreports
-        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
-        | BodyResponseCallback<Readable>,
-      optionsOrCallback?:
-        | MethodOptions
-        | StreamMethodOptions
-        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
-        | BodyResponseCallback<Readable>,
-      callback?:
-        | BodyResponseCallback<Schema$BatchRunPivotReportsResponse>
-        | BodyResponseCallback<Readable>
-    ):
-      | void
-      | GaxiosPromise<Schema$BatchRunPivotReportsResponse>
-      | GaxiosPromise<Readable> {
-      let params = (paramsOrCallback ||
-        {}) as Params$Resource$V1alpha$Batchrunpivotreports;
-      let options = (optionsOrCallback || {}) as MethodOptions;
-
-      if (typeof paramsOrCallback === 'function') {
-        callback = paramsOrCallback;
-        params = {} as Params$Resource$V1alpha$Batchrunpivotreports;
-        options = {};
-      }
-
-      if (typeof optionsOrCallback === 'function') {
-        callback = optionsOrCallback;
-        options = {};
-      }
-
-      const rootUrl =
-        options.rootUrl || 'https://analyticsdata.googleapis.com/';
-      const parameters = {
-        options: Object.assign(
-          {
-            url: (rootUrl + '/v1alpha:batchRunPivotReports').replace(
-              /([^:]\/)\/+/g,
-              '$1'
-            ),
-            method: 'POST',
-          },
-          options
-        ),
-        params,
-        requiredParams: [],
-        pathParams: [],
-        context: this.context,
-      };
-      if (callback) {
-        createAPIRequest<Schema$BatchRunPivotReportsResponse>(
-          parameters,
-          callback as BodyResponseCallback<unknown>
-        );
-      } else {
-        return createAPIRequest<Schema$BatchRunPivotReportsResponse>(
-          parameters
-        );
-      }
-    }
-
-    /**
-     * Returns multiple reports in a batch. All reports must be for the same Entity.
-     * @example
-     * ```js
-     * // Before running the sample:
-     * // - Enable the API at:
-     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
-     * // - Login into gcloud by running:
-     * //   `$ gcloud auth application-default login`
-     * // - Install the npm module by running:
-     * //   `$ npm install googleapis`
-     *
-     * const {google} = require('googleapis');
-     * const analyticsdata = google.analyticsdata('v1alpha');
-     *
-     * async function main() {
-     *   const auth = new google.auth.GoogleAuth({
-     *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/analytics',
-     *       'https://www.googleapis.com/auth/analytics.readonly',
-     *     ],
-     *   });
-     *
-     *   // Acquire an auth client, and bind it to all future calls
-     *   const authClient = await auth.getClient();
-     *   google.options({auth: authClient});
-     *
-     *   // Do the magic
-     *   const res = await analyticsdata.batchRunReports({
-     *     // Request body metadata
-     *     requestBody: {
-     *       // request body parameters
-     *       // {
-     *       //   "entity": {},
-     *       //   "requests": []
-     *       // }
-     *     },
-     *   });
-     *   console.log(res.data);
-     *
-     *   // Example response
-     *   // {
-     *   //   "kind": "my_kind",
-     *   //   "reports": []
-     *   // }
-     * }
-     *
-     * main().catch(e => {
-     *   console.error(e);
-     *   throw e;
-     * });
-     *
-     * ```
-     *
-     * @param params - Parameters for request
-     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
-     * @param callback - Optional callback that handles the response.
-     * @returns A promise if used with async/await, or void if used with a callback.
-     */
-    batchRunReports(
-      params: Params$Resource$V1alpha$Batchrunreports,
-      options: StreamMethodOptions
-    ): GaxiosPromise<Readable>;
-    batchRunReports(
-      params?: Params$Resource$V1alpha$Batchrunreports,
-      options?: MethodOptions
-    ): GaxiosPromise<Schema$BatchRunReportsResponse>;
-    batchRunReports(
-      params: Params$Resource$V1alpha$Batchrunreports,
-      options: StreamMethodOptions | BodyResponseCallback<Readable>,
-      callback: BodyResponseCallback<Readable>
-    ): void;
-    batchRunReports(
-      params: Params$Resource$V1alpha$Batchrunreports,
-      options:
-        | MethodOptions
-        | BodyResponseCallback<Schema$BatchRunReportsResponse>,
-      callback: BodyResponseCallback<Schema$BatchRunReportsResponse>
-    ): void;
-    batchRunReports(
-      params: Params$Resource$V1alpha$Batchrunreports,
-      callback: BodyResponseCallback<Schema$BatchRunReportsResponse>
-    ): void;
-    batchRunReports(
-      callback: BodyResponseCallback<Schema$BatchRunReportsResponse>
-    ): void;
-    batchRunReports(
-      paramsOrCallback?:
-        | Params$Resource$V1alpha$Batchrunreports
-        | BodyResponseCallback<Schema$BatchRunReportsResponse>
-        | BodyResponseCallback<Readable>,
-      optionsOrCallback?:
-        | MethodOptions
-        | StreamMethodOptions
-        | BodyResponseCallback<Schema$BatchRunReportsResponse>
-        | BodyResponseCallback<Readable>,
-      callback?:
-        | BodyResponseCallback<Schema$BatchRunReportsResponse>
-        | BodyResponseCallback<Readable>
-    ):
-      | void
-      | GaxiosPromise<Schema$BatchRunReportsResponse>
-      | GaxiosPromise<Readable> {
-      let params = (paramsOrCallback ||
-        {}) as Params$Resource$V1alpha$Batchrunreports;
-      let options = (optionsOrCallback || {}) as MethodOptions;
-
-      if (typeof paramsOrCallback === 'function') {
-        callback = paramsOrCallback;
-        params = {} as Params$Resource$V1alpha$Batchrunreports;
-        options = {};
-      }
-
-      if (typeof optionsOrCallback === 'function') {
-        callback = optionsOrCallback;
-        options = {};
-      }
-
-      const rootUrl =
-        options.rootUrl || 'https://analyticsdata.googleapis.com/';
-      const parameters = {
-        options: Object.assign(
-          {
-            url: (rootUrl + '/v1alpha:batchRunReports').replace(
-              /([^:]\/)\/+/g,
-              '$1'
-            ),
-            method: 'POST',
-          },
-          options
-        ),
-        params,
-        requiredParams: [],
-        pathParams: [],
-        context: this.context,
-      };
-      if (callback) {
-        createAPIRequest<Schema$BatchRunReportsResponse>(
-          parameters,
-          callback as BodyResponseCallback<unknown>
-        );
-      } else {
-        return createAPIRequest<Schema$BatchRunReportsResponse>(parameters);
-      }
-    }
-
-    /**
-     * Returns a customized pivot report of your Google Analytics event data. Pivot reports are more advanced and expressive formats than regular reports. In a pivot report, dimensions are only visible if they are included in a pivot. Multiple pivots can be specified to further dissect your data.
-     * @example
-     * ```js
-     * // Before running the sample:
-     * // - Enable the API at:
-     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
-     * // - Login into gcloud by running:
-     * //   `$ gcloud auth application-default login`
-     * // - Install the npm module by running:
-     * //   `$ npm install googleapis`
-     *
-     * const {google} = require('googleapis');
-     * const analyticsdata = google.analyticsdata('v1alpha');
-     *
-     * async function main() {
-     *   const auth = new google.auth.GoogleAuth({
-     *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/analytics',
-     *       'https://www.googleapis.com/auth/analytics.readonly',
-     *     ],
-     *   });
-     *
-     *   // Acquire an auth client, and bind it to all future calls
-     *   const authClient = await auth.getClient();
-     *   google.options({auth: authClient});
-     *
-     *   // Do the magic
-     *   const res = await analyticsdata.runPivotReport({
      *     // Request body metadata
      *     requestBody: {
      *       // request body parameters
@@ -1683,169 +2102,6 @@ export namespace analyticsdata_v1alpha {
      *       //   "dateRanges": [],
      *       //   "dimensionFilter": {},
      *       //   "dimensions": [],
-     *       //   "entity": {},
-     *       //   "keepEmptyRows": false,
-     *       //   "metricFilter": {},
-     *       //   "metrics": [],
-     *       //   "pivots": [],
-     *       //   "returnPropertyQuota": false
-     *       // }
-     *     },
-     *   });
-     *   console.log(res.data);
-     *
-     *   // Example response
-     *   // {
-     *   //   "aggregates": [],
-     *   //   "dimensionHeaders": [],
-     *   //   "kind": "my_kind",
-     *   //   "metadata": {},
-     *   //   "metricHeaders": [],
-     *   //   "pivotHeaders": [],
-     *   //   "propertyQuota": {},
-     *   //   "rows": []
-     *   // }
-     * }
-     *
-     * main().catch(e => {
-     *   console.error(e);
-     *   throw e;
-     * });
-     *
-     * ```
-     *
-     * @param params - Parameters for request
-     * @param options - Optionally override request options, such as `url`, `method`, and `encoding`.
-     * @param callback - Optional callback that handles the response.
-     * @returns A promise if used with async/await, or void if used with a callback.
-     */
-    runPivotReport(
-      params: Params$Resource$V1alpha$Runpivotreport,
-      options: StreamMethodOptions
-    ): GaxiosPromise<Readable>;
-    runPivotReport(
-      params?: Params$Resource$V1alpha$Runpivotreport,
-      options?: MethodOptions
-    ): GaxiosPromise<Schema$RunPivotReportResponse>;
-    runPivotReport(
-      params: Params$Resource$V1alpha$Runpivotreport,
-      options: StreamMethodOptions | BodyResponseCallback<Readable>,
-      callback: BodyResponseCallback<Readable>
-    ): void;
-    runPivotReport(
-      params: Params$Resource$V1alpha$Runpivotreport,
-      options:
-        | MethodOptions
-        | BodyResponseCallback<Schema$RunPivotReportResponse>,
-      callback: BodyResponseCallback<Schema$RunPivotReportResponse>
-    ): void;
-    runPivotReport(
-      params: Params$Resource$V1alpha$Runpivotreport,
-      callback: BodyResponseCallback<Schema$RunPivotReportResponse>
-    ): void;
-    runPivotReport(
-      callback: BodyResponseCallback<Schema$RunPivotReportResponse>
-    ): void;
-    runPivotReport(
-      paramsOrCallback?:
-        | Params$Resource$V1alpha$Runpivotreport
-        | BodyResponseCallback<Schema$RunPivotReportResponse>
-        | BodyResponseCallback<Readable>,
-      optionsOrCallback?:
-        | MethodOptions
-        | StreamMethodOptions
-        | BodyResponseCallback<Schema$RunPivotReportResponse>
-        | BodyResponseCallback<Readable>,
-      callback?:
-        | BodyResponseCallback<Schema$RunPivotReportResponse>
-        | BodyResponseCallback<Readable>
-    ):
-      | void
-      | GaxiosPromise<Schema$RunPivotReportResponse>
-      | GaxiosPromise<Readable> {
-      let params = (paramsOrCallback ||
-        {}) as Params$Resource$V1alpha$Runpivotreport;
-      let options = (optionsOrCallback || {}) as MethodOptions;
-
-      if (typeof paramsOrCallback === 'function') {
-        callback = paramsOrCallback;
-        params = {} as Params$Resource$V1alpha$Runpivotreport;
-        options = {};
-      }
-
-      if (typeof optionsOrCallback === 'function') {
-        callback = optionsOrCallback;
-        options = {};
-      }
-
-      const rootUrl =
-        options.rootUrl || 'https://analyticsdata.googleapis.com/';
-      const parameters = {
-        options: Object.assign(
-          {
-            url: (rootUrl + '/v1alpha:runPivotReport').replace(
-              /([^:]\/)\/+/g,
-              '$1'
-            ),
-            method: 'POST',
-          },
-          options
-        ),
-        params,
-        requiredParams: [],
-        pathParams: [],
-        context: this.context,
-      };
-      if (callback) {
-        createAPIRequest<Schema$RunPivotReportResponse>(
-          parameters,
-          callback as BodyResponseCallback<unknown>
-        );
-      } else {
-        return createAPIRequest<Schema$RunPivotReportResponse>(parameters);
-      }
-    }
-
-    /**
-     * Returns a customized report of your Google Analytics event data. Reports contain statistics derived from data collected by the Google Analytics tracking code. The data returned from the API is as a table with columns for the requested dimensions and metrics. Metrics are individual measurements of user activity on your property, such as active users or event count. Dimensions break down metrics across some common criteria, such as country or event name.
-     * @example
-     * ```js
-     * // Before running the sample:
-     * // - Enable the API at:
-     * //   https://console.developers.google.com/apis/api/analyticsdata.googleapis.com
-     * // - Login into gcloud by running:
-     * //   `$ gcloud auth application-default login`
-     * // - Install the npm module by running:
-     * //   `$ npm install googleapis`
-     *
-     * const {google} = require('googleapis');
-     * const analyticsdata = google.analyticsdata('v1alpha');
-     *
-     * async function main() {
-     *   const auth = new google.auth.GoogleAuth({
-     *     // Scopes can be specified either as an array or as a single, space-delimited string.
-     *     scopes: [
-     *       'https://www.googleapis.com/auth/analytics',
-     *       'https://www.googleapis.com/auth/analytics.readonly',
-     *     ],
-     *   });
-     *
-     *   // Acquire an auth client, and bind it to all future calls
-     *   const authClient = await auth.getClient();
-     *   google.options({auth: authClient});
-     *
-     *   // Do the magic
-     *   const res = await analyticsdata.runReport({
-     *     // Request body metadata
-     *     requestBody: {
-     *       // request body parameters
-     *       // {
-     *       //   "cohortSpec": {},
-     *       //   "currencyCode": "my_currencyCode",
-     *       //   "dateRanges": [],
-     *       //   "dimensionFilter": {},
-     *       //   "dimensions": [],
-     *       //   "entity": {},
      *       //   "keepEmptyRows": false,
      *       //   "limit": "my_limit",
      *       //   "metricAggregations": [],
@@ -1853,6 +2109,7 @@ export namespace analyticsdata_v1alpha {
      *       //   "metrics": [],
      *       //   "offset": "my_offset",
      *       //   "orderBys": [],
+     *       //   "property": "my_property",
      *       //   "returnPropertyQuota": false
      *       // }
      *     },
@@ -1887,31 +2144,31 @@ export namespace analyticsdata_v1alpha {
      * @returns A promise if used with async/await, or void if used with a callback.
      */
     runReport(
-      params: Params$Resource$V1alpha$Runreport,
+      params: Params$Resource$Properties$Runreport,
       options: StreamMethodOptions
     ): GaxiosPromise<Readable>;
     runReport(
-      params?: Params$Resource$V1alpha$Runreport,
+      params?: Params$Resource$Properties$Runreport,
       options?: MethodOptions
     ): GaxiosPromise<Schema$RunReportResponse>;
     runReport(
-      params: Params$Resource$V1alpha$Runreport,
+      params: Params$Resource$Properties$Runreport,
       options: StreamMethodOptions | BodyResponseCallback<Readable>,
       callback: BodyResponseCallback<Readable>
     ): void;
     runReport(
-      params: Params$Resource$V1alpha$Runreport,
+      params: Params$Resource$Properties$Runreport,
       options: MethodOptions | BodyResponseCallback<Schema$RunReportResponse>,
       callback: BodyResponseCallback<Schema$RunReportResponse>
     ): void;
     runReport(
-      params: Params$Resource$V1alpha$Runreport,
+      params: Params$Resource$Properties$Runreport,
       callback: BodyResponseCallback<Schema$RunReportResponse>
     ): void;
     runReport(callback: BodyResponseCallback<Schema$RunReportResponse>): void;
     runReport(
       paramsOrCallback?:
-        | Params$Resource$V1alpha$Runreport
+        | Params$Resource$Properties$Runreport
         | BodyResponseCallback<Schema$RunReportResponse>
         | BodyResponseCallback<Readable>,
       optionsOrCallback?:
@@ -1927,12 +2184,12 @@ export namespace analyticsdata_v1alpha {
       | GaxiosPromise<Schema$RunReportResponse>
       | GaxiosPromise<Readable> {
       let params = (paramsOrCallback ||
-        {}) as Params$Resource$V1alpha$Runreport;
+        {}) as Params$Resource$Properties$Runreport;
       let options = (optionsOrCallback || {}) as MethodOptions;
 
       if (typeof paramsOrCallback === 'function') {
         callback = paramsOrCallback;
-        params = {} as Params$Resource$V1alpha$Runreport;
+        params = {} as Params$Resource$Properties$Runreport;
         options = {};
       }
 
@@ -1946,14 +2203,17 @@ export namespace analyticsdata_v1alpha {
       const parameters = {
         options: Object.assign(
           {
-            url: (rootUrl + '/v1alpha:runReport').replace(/([^:]\/)\/+/g, '$1'),
+            url: (rootUrl + '/v1beta/{+property}:runReport').replace(
+              /([^:]\/)\/+/g,
+              '$1'
+            ),
             method: 'POST',
           },
           options
         ),
         params,
-        requiredParams: [],
-        pathParams: [],
+        requiredParams: ['property'],
+        pathParams: ['property'],
         context: this.context,
       };
       if (callback) {
@@ -1967,29 +2227,80 @@ export namespace analyticsdata_v1alpha {
     }
   }
 
-  export interface Params$Resource$V1alpha$Batchrunpivotreports
+  export interface Params$Resource$Properties$Batchrunpivotreports
     extends StandardParameters {
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). This property must be specified for the batch. The property within RunPivotReportRequest may either be unspecified or consistent with this property. Example: properties/1234
+     */
+    property?: string;
+
     /**
      * Request body metadata
      */
     requestBody?: Schema$BatchRunPivotReportsRequest;
   }
-  export interface Params$Resource$V1alpha$Batchrunreports
+  export interface Params$Resource$Properties$Batchrunreports
     extends StandardParameters {
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). This property must be specified for the batch. The property within RunReportRequest may either be unspecified or consistent with this property. Example: properties/1234
+     */
+    property?: string;
+
     /**
      * Request body metadata
      */
     requestBody?: Schema$BatchRunReportsRequest;
   }
-  export interface Params$Resource$V1alpha$Runpivotreport
+  export interface Params$Resource$Properties$Checkcompatibility
     extends StandardParameters {
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). `property` should be the same value as in your `runReport` request. Example: properties/1234 Set the Property ID to 0 for compatibility checking on dimensions and metrics common to all properties. In this special mode, this method will not return custom dimensions and metrics.
+     */
+    property?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$CheckCompatibilityRequest;
+  }
+  export interface Params$Resource$Properties$Getmetadata
+    extends StandardParameters {
+    /**
+     * Required. The resource name of the metadata to retrieve. This name field is specified in the URL path and not URL parameters. Property is a numeric Google Analytics GA4 Property identifier. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Example: properties/1234/metadata Set the Property ID to 0 for dimensions and metrics common to all properties. In this special mode, this method will not return custom dimensions and metrics.
+     */
+    name?: string;
+  }
+  export interface Params$Resource$Properties$Runpivotreport
+    extends StandardParameters {
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Within a batch request, this property should either be unspecified or consistent with the batch-level property. Example: properties/1234
+     */
+    property?: string;
+
     /**
      * Request body metadata
      */
     requestBody?: Schema$RunPivotReportRequest;
   }
-  export interface Params$Resource$V1alpha$Runreport
+  export interface Params$Resource$Properties$Runrealtimereport
     extends StandardParameters {
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Example: properties/1234
+     */
+    property?: string;
+
+    /**
+     * Request body metadata
+     */
+    requestBody?: Schema$RunRealtimeReportRequest;
+  }
+  export interface Params$Resource$Properties$Runreport
+    extends StandardParameters {
+    /**
+     * A Google Analytics GA4 property identifier whose events are tracked. Specified in the URL path and not the body. To learn more, see [where to find your Property ID](https://developers.google.com/analytics/devguides/reporting/data/v1/property-id). Within a batch request, this property should either be unspecified or consistent with the batch-level property. Example: properties/1234
+     */
+    property?: string;
+
     /**
      * Request body metadata
      */
