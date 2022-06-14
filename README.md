@@ -16,7 +16,15 @@
 ## Upgrading existing API's:
   - Run `npm run generateMin` to re-generate whitelisted APIs using the current version
 
-### Development/deployment pipeline:
+## Publishing a new Version:
+  - https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#publishing-a-package
+  - Update the `version` field of the package file
+  - Ensure your `.npmrc` file is in the project root
+    - It should contain the line `@adrizer:registry=https://npm.pkg.github.com`
+  - Run `npm publish`
+  - The package list should reflect the update: https://github.com/orgs/adrizer/packages?repo_name=google-api-nodejs-client
+
+## Development/deployment pipeline:
 ```
   Download => Generate => Compile =>  Publish
 ```
